@@ -6,7 +6,7 @@ router.post("/register", authController.register);
 router.post("/login", authController.login);
 
 router
-    .route("/:id")
     .use(authController.protect)
-    .patch(authController.updateUser)
+    .route("/:id")
+    .patch(authController.restrictTo("user"), authController.updateUser)
 module.exports = router;
