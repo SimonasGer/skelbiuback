@@ -61,9 +61,28 @@ exports.login = async (req, res) => {
     }
 }
 
+exports.updateUser = async (req, res) => {
+    try{
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        });
+        res.status(200).json({
+            status: "success",
+            data: {
+                user,
+            },
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: "failed",
+            message: err.message,
+        });
+    }
+};
+
 exports.protect = async (req, res, next) => {
     try {
-        // 1. Get token:
         let token;
         if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
             token = req.headers.authorization.split(" ")[1];
@@ -71,18 +90,11 @@ exports.protect = async (req, res, next) => {
         if (!token){
             throw new Error("User not authenticated");
         }
-        // 2. Verify token:
         const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-        // 3. Check if user exists:
         const currentUser = await User.findById(decoded.id);
         if (!currentUser) {
             throw new Error("User does not exist");
         }
-        // 4. Check if user changed pw:
-        if (currentUser.changePasswordAfter(decoded.iat)) {
-            throw new Error("User changed password; token is invalid");
-        }
-        // Grant access:
         req.user = currentUser;
         next();
     } catch (err) {
