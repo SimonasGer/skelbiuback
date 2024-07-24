@@ -7,7 +7,7 @@ router.use(authController.protect); // padaro, kad visi routes butu apsaugoti nu
 router
     .route("/")
     .get(authController.restrictTo("user", "admin"), dishController.getAllDishes)
-    .post(dishController.createDish);
+    .post(authController.restrictTo("admin"), dishController.createDish);
 
 router
     .route("/:id")
