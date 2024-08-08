@@ -11,8 +11,12 @@ router
 
 router
     .route("/:id")
-    .get(dishController.getDishById)
-    .patch(authController.restrictTo("admin"), dishController.updateDish)
-    .delete(authController.restrictTo("admin"), dishController.deleteDish);
+    .get(authController.restrictTo("user", "admin"), dishController.getDishById)
+    .post(authController.restrictTo("user", "admin"), dishController.updateLikes)
+
+router
+    .route("/update/:id")
+    .post(authController.restrictTo("admin"), dishController.updateDish)
+
 
 module.exports = router;

@@ -62,7 +62,7 @@ exports.createDish = async (req, res) => {
 
 exports.getDishById = async (req, res) => {
     try {
-        const dish = await Dish.findById(req.params.id).populate("users"); // populate, kad sudeti users is duomenu bazes
+        const dish = await Dish.findById(req.params.id).populate("likes"); // populate, kad sudeti users is duomenu bazes
         if (!dish) {
             res.status(404).json({
                 status: "failed",
@@ -88,6 +88,43 @@ exports.updateDish = async (req, res) => {
             new: true,
             runValidators: true,
         });
+        dish.likes.push(req.body.likes)
+        res.status(200).json({
+            status: "success",
+            data: {
+                dish,
+            },
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: "failed",
+            message: err.message,
+        });
+    }
+};
+
+exports.updateLikes = async (req, res) => {
+    try {
+        const dish = await Dish.findById(req.params.id);
+        if (!dish) {
+            return res.status(404).json({
+                status: "failed",
+                message: "Dish not found",
+            });
+        }
+        
+        const existingLikeIndex = dish.likes.indexOf(req.body.likes);
+
+        if (existingLikeIndex === -1) {
+            // Item does not exist, so add it
+            dish.likes.push(req.body.likes);
+        } else {
+            // Item exists, so remove it
+            dish.likes.splice(existingLikeIndex, 1);
+        }
+
+        await dish.save();
+
         res.status(200).json({
             status: "success",
             data: {
