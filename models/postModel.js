@@ -1,15 +1,9 @@
 const mongoose = require("mongoose");
 const { type } = require("os");
-const dishSchema = new mongoose.Schema({
+const postSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true,
-    },
-    day: {
-        type: Number,
-        required: true,
-        enum: [1, 2, 3, 4, 5, 6, 7],
     },
     description: {
         type: String,
@@ -27,6 +21,14 @@ const dishSchema = new mongoose.Schema({
         type: Array,
         users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
     },
+    comments: {
+        type: Array,
+        comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
+    },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'User',
+        required: true,
+    },
     created_at: {
         type: Date,
         default: Date.now(),
@@ -35,5 +37,5 @@ const dishSchema = new mongoose.Schema({
 })
 
 
-const Dish = mongoose.model("Dish", dishSchema);
-module.exports = Dish;
+const Post = mongoose.model("Post", postSchema);
+module.exports = Post;

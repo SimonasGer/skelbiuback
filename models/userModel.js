@@ -33,9 +33,13 @@ const userSchema = new mongoose.Schema({
         enum: ["user", "admin"],
         default: "user",
     },
-    dishes: {
+    posts: {
         type: Array,
-        dishes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Dish' }]
+        dishes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
+    },
+    comments: {
+        type: Array,
+        dishes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
     }
 })
 
