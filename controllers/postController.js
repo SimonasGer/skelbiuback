@@ -1,5 +1,5 @@
 const Post = require("../models/postModel");
-
+const User = require("../models/userModel");
 // ROUTE FUNCTIONS
 exports.getAllPosts = async (req, res) => {
     try {
@@ -49,6 +49,12 @@ exports.getAllPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
     try {
         const newPost = await Post.create(req.body);
+
+        const creator = await User.findById(req.body.creator);
+
+        creator.posts.push(newPost._id);
+        await creator.save();
+        
         res.status(201).json({
             status: "success",
             data: {

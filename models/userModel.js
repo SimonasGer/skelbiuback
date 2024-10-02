@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
     },
     confirmPassword: {
         type: String,
-        required: true,
         validate: {
             validator: function (el) {
                 return el === this.password;
@@ -43,11 +42,17 @@ const userSchema = new mongoose.Schema({
     }
 })
 
-userSchema.pre("save", async function (next) {
+userSchema.pre('save', async function (next) {
+    // Only hash the password if it has been modified or is new
+    if (!this.isModified('password')) return next();
+
+    // Hash the password with cost of 12
     this.password = await bcrypt.hash(this.password, 12);
+
+    // Delete confirmPassword field after validation
     this.confirmPassword = undefined;
     next();
-  });
+});
 
 userSchema.methods.correctPassword = async (
     candidatePassword,
