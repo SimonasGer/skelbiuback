@@ -77,7 +77,7 @@ exports.createComment = async (req, res) => {
 
 exports.getCommentById = async (req, res) => {
     try {
-        const comment = await Comment.findById(req.params.id).populate("likes"); // populate, kad sudeti users is duomenu bazes
+        const comment = await Comment.findById(req.params.id).populate("likes").populate("creator"); // populate, kad sudeti users is duomenu bazes
         if (!comment) {
             res.status(404).json({
                 status: "failed",

@@ -68,7 +68,7 @@ exports.createPost = async (req, res) => {
 
 exports.getPostById = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id).populate("likes"); // populate, kad sudeti users is duomenu bazes
+        const post = await Post.findById(req.params.id).populate("likes").populate("creator"); // populate, kad sudeti users is duomenu bazes
         if (!post) {
             res.status(404).json({
                 status: "failed",

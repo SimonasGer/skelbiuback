@@ -5,23 +5,21 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    likes: {
-        type: Array,
-        users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
-    },
-    comments: {
-        type: Array,
-        comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
-    },
-    creator: {
+    comments: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'comment' }
+    ],
+    creator: { 
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required: true,
     },
+    likes: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
     comment: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'Comment',
+        type: mongoose.Schema.Types.ObjectId, ref: 'comment',
     },
     post: {
-        type: mongoose.Schema.Types.ObjectId, ref: "Post",
+        type: mongoose.Schema.Types.ObjectId, ref: "post",
     },
     created_at: {
         type: Date,
