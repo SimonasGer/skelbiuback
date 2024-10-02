@@ -50,16 +50,19 @@ exports.getComments = async (req, res) => {
 exports.createComment = async (req, res) => {
     try {
         const newComment = await Comment.create(req.body);
-
         const creator = await User.findById(req.body.creator);
 
         creator.comments.push(newComment._id);
         await creator.save();
-
-        const post = await Post.findById(req.body.post);
-
-        post.comments.push(newComment._id);
-        await post.save();
+        if(req.body.post){
+            const post = await Post.findById(req.body.post);
+            post.comments.push(newComment._id);
+            await post.save();
+        } else if (req.body.comment){
+            const parent = await Comment.findById(req.body.comment);
+            parent.comments.push(newComment._id);
+            await parent.save();
+        }
 
         res.status(201).json({
             status: "success",
