@@ -1,4 +1,6 @@
 const Comment = require("../models/commentModel");
+const User = require("../models/userModel");
+const Post = require("../models/postModel");
 
 // ROUTE FUNCTIONS
 exports.getComments = async (req, res) => {
@@ -48,6 +50,17 @@ exports.getComments = async (req, res) => {
 exports.createComment = async (req, res) => {
     try {
         const newComment = await Comment.create(req.body);
+
+        const creator = await User.findById(req.body.creator);
+
+        creator.comments.push(newComment._id);
+        await creator.save();
+
+        const post = await Post.findById(req.body.post);
+
+        post.comments.push(newComment._id);
+        await post.save();
+
         res.status(201).json({
             status: "success",
             data: {
@@ -59,6 +72,26 @@ exports.createComment = async (req, res) => {
     }
 };
 
+exports.getCommentById = async (req, res) => {
+    try {
+        const comment = await Comment.findById(req.params.id).populate("likes"); // populate, kad sudeti users is duomenu bazes
+        if (!comment) {
+            res.status(404).json({
+                status: "failed",
+                message: "invalid id",
+            });
+        } else {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    comment,
+                },
+            });
+        }
+    } catch (err) {
+        console.log(err);
+    }
+};
 
 // kitam kartui
 exports.updateComment = async (req, res) => {

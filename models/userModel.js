@@ -34,11 +34,11 @@ const userSchema = new mongoose.Schema({
     },
     posts: {
         type: Array,
-        dishes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
+        posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
     },
     comments: {
         type: Array,
-        dishes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
+        comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
     }
 })
 
