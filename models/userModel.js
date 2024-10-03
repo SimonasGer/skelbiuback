@@ -32,14 +32,15 @@ const userSchema = new mongoose.Schema({
         enum: ["user", "admin"],
         default: "user",
     },
-    posts: {
-        type: Array,
-        posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
-    },
-    comments: {
-        type: Array,
-        comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
-    }
+    posts: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }
+    ],
+    comments: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }
+    ],
+    likes: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }
+    ]
 })
 
 userSchema.pre('save', async function (next) {

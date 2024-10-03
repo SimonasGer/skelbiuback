@@ -8,5 +8,6 @@ router.post("/login", authController.login);
 router
     .use(authController.protect)
     .route("/:id")
-    .patch(authController.restrictTo("user"), authController.updateUser)
+    .get(authController.restrictTo("user", "admin"), authController.getUserById)
+    .patch(authController.restrictTo("user", "admin"), authController.updateUser)
 module.exports = router;

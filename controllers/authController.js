@@ -61,6 +61,27 @@ exports.login = async (req, res) => {
     }
 }
 
+exports.getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate("posts").populate("comments"); // populate, kad sudeti users is duomenu bazes
+        if (!user) {
+            res.status(404).json({
+                status: "failed",
+                message: "invalid id",
+            });
+        } else {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    user,
+                },
+            });
+        }
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 exports.updateUser = async (req, res) => {
     try{
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {

@@ -118,18 +118,22 @@ exports.updateLikes = async (req, res) => {
                 message: "Dish not found",
             });
         }
-        
+        const user = await User.findById(req.body.likes);
         const existingLikeIndex = post.likes.indexOf(req.body.likes);
+        const existingUserIndex = user.likes.indexOf(req.params.id);
 
         if (existingLikeIndex === -1) {
             // Item does not exist, so add it
             post.likes.push(req.body.likes);
+            user.likes.push(req.params.id)
         } else {
             // Item exists, so remove it
             post.likes.splice(existingLikeIndex, 1);
+            user.likes.splice(existingUserIndex, 1);
         }
 
         await post.save();
+        await user.save();
 
         res.status(200).json({
             status: "success",
