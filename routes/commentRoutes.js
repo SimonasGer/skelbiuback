@@ -17,5 +17,9 @@ router
     .route("/update/:id")
     .post(authController.restrictTo("admin", "user"), commentController.updateComment)
 
+router
+    .route("/delete/:id")
+    .post(authController.restrictTo("user", "admin"), commentController.deleteComment)
+
 
 module.exports = router;

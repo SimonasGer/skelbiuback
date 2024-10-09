@@ -120,7 +120,7 @@ exports.updateComment = async (req, res) => {
 
 exports.updateLikes = async (req, res) => {
     try {
-        const post = await Comment.findById(req.params.id);
+        const comment = await Comment.findById(req.params.id);
         if (!comment) {
             return res.status(404).json({
                 status: "failed",
@@ -156,14 +156,74 @@ exports.updateLikes = async (req, res) => {
 
 exports.deleteComment = async (req, res) => {
     try {
-        await Comment.findByIdAndDelete(req.params.id);
+        // Find the comment by ID
+        const comment = await Comment.findById(req.params.id);
+        if (!comment) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Comment not found'
+            });
+        }
+
+        // Get references to creator, post, and parent comment
+        const creator = await User.findById(req.body.creator._id);
+        const post = await Post.findById(req.body.post);
+        const origin = await Comment.findById(req.body.comment);
+
+        // Check if the comment has replies
+        if (comment.comments.length > 0) {
+            // Mark the comment as [removed]
+            comment.content = "[removed]";
+            await comment.save(); // Save the updated comment
+
+            // No need to remove the comment from the post since it's just marked
+            // return success response
+            return res.status(200).json({
+                status: "success",
+                message: "Comment marked as removed successfully",
+            });
+        } else {
+            // If the comment has no replies, delete it
+            await Comment.findByIdAndDelete(req.params.id);
+            // Only now, remove the comment reference from the post's comments
+            if (post) {
+                const postIndex = post.comments.indexOf(req.params.id);
+                if (postIndex > -1) {
+                    post.comments.splice(postIndex, 1);
+                    await post.save(); // Save the post after removing the comment
+                }
+            }
+        }
+
+        // Remove the comment reference from the creator's comments
+        if (creator) {
+            const creatorIndex = creator.comments.indexOf(req.params.id);
+            if (creatorIndex > -1) {
+                creator.comments.splice(creatorIndex, 1);
+                await creator.save(); // Save the creator after removing the comment reference
+            }
+        }
+
+        // Remove the comment reference from the parent comment (if it's a reply)
+        if (origin) {
+            const originIndex = origin.comments.indexOf(req.params.id);
+            if (originIndex > -1) {
+                origin.comments.splice(originIndex, 1);
+                await origin.save(); // Save the origin comment after removing the reference
+            }
+        }
+
+        // Return success response
         res.status(200).json({
             status: "success",
-            data: {
-                comment: "deleted",
-            },
+            message: "Comment processed successfully",
         });
+
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        res.status(500).json({
+            status: "error",
+            message: "Something went wrong",
+        });
     }
 };
