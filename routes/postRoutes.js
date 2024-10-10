@@ -13,6 +13,7 @@ router
     .route("/:id")
     .get(authController.restrictTo("user", "admin"), postController.getPostById)
     .post(authController.restrictTo("user", "admin"), postController.updateLikes)
+    .delete(authController.restrictTo("user", "admin"), postController.deletePost)
 
 router
     .route("/update/:id")
