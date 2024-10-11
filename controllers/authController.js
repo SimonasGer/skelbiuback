@@ -8,6 +8,21 @@ const signToken = (id) => {
     })
 }
 
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.status(200).json({
+            status: "success",
+            results: users.length,
+            data: {
+                users,
+            },
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 exports.register = async (req, res) => {
     try {
         const newUser = await User.create({
@@ -63,7 +78,7 @@ exports.login = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).populate("posts").populate("comments"); // populate, kad sudeti users is duomenu bazes
+        const user = await User.findById(req.params.id).populate("posts").populate("comments").populate("likes"); // populate, kad sudeti users is duomenu bazes
         if (!user) {
             res.status(404).json({
                 status: "failed",
@@ -99,6 +114,20 @@ exports.updateUser = async (req, res) => {
             status: "failed",
             message: err.message,
         });
+    }
+};
+
+exports.deleteUser = async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).json({
+            status: "success",
+            data: {
+                user: "deleted",
+            },
+        });
+    } catch (err) {
+        console.log(err);
     }
 };
 
